@@ -1,23 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab1</title>
+
+</head>
+
+<body>
 <?php
+echo 'Рядок додано <br><br>';
 
 $note = $_POST['note'];
-$calendar = $_POST['calendar'];
-echo 'Зроблено!';
-echo "  ";
+$year = $_POST['year'];
+$month = $_POST['month'];
+$day = $_POST['day'];
 
-$item = [$note => $calendar];
+$item =  ["date" => $year . '.' . $month . '.' . $day, "note" => $note];
 
-$file = 'pink.txt';
-$current = file_get_contents($file);
-if ($current) {
-    $current = substr($current, 5);
-    $current = json_decode($current, true);
-} else
-    $current = [];
+$url = 'file.txt';
 
-array_unshift($current, $item);
-$current .= json_encode($current, true);
-echo $current ;
+$readJSONFile = file_get_contents($url);
+$array = json_decode($readJSONFile);
 
-file_put_contents($file, $current);
+if (!$array) $array = [];
+
+array_push($array, $item);
+
+$arrayJson = json_encode($array);
+$array = json_decode($arrayJson);
+
+usort($array, function ($a, $b) {
+    return $a->date > $b->date ? -1 : 1;
+});
+
+$arrayJson = json_encode($array);
+file_put_contents($url, $arrayJson);
+
+echo '<table border = 1>';
+
+foreach ($array as $value) {
+    echo '<tr><td>';
+    echo $value->date;
+    echo '</td><td>';
+    echo $value->note;
+    echo '</td><tr>';
+}
+
+echo '</table>';
+
 ?>
+
+<a href="/">Повернутися на головну</a>
+</body>
+
+</html>
